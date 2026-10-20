@@ -5,6 +5,7 @@
   "summary": "Volitio's Mod Configuration Menu, built from its GitHub source: the in-game menu for the settings and hotkeys of other mods.",
   "games": ["baldurs-gate-3"],
   "tags": ["library", "ui"],
+  "cover": "docs/cover.png",
   "requires": ["Norbyte's Script Extender"],
   "gameVersions": ["Patch 8"]
 }
