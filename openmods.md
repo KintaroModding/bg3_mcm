@@ -12,17 +12,18 @@ hotkeys of all mods that use it. No more editing of JSON files:
 - Settings are saved in files outside the savegames, in profiles.
 - Mods can show their texts in your language when they have translations.
 - In this build, the sidebar with the list of mods is always shown: it never collapses or hides.
+- The window title ends with "(KintaroModding)", so you can tell this build from the official one.
 
 ## Why this build
 
 The author publishes MCM on [Nexus Mods](https://www.nexusmods.com/baldursgate3/mods/9162) and its source code on
 [GitHub](https://github.com/AtilioA/BG3-MCM), but the GitHub repository has no releases. This fork builds releases
 from that source, so that the download and the source match, and so that the mod stays maintainable in any case.
-It is the same mod, with the same UUID, so every mod that uses MCM works with it. It has one change: the sidebar
-with the list of mods is always shown, so the settings to hide or toggle it are gone. Details are in
-[FORK.md](FORK.md).
+It is the same mod, with the same UUID, so every mod that uses MCM works with it. It has two small changes: the
+sidebar with the list of mods is always shown (the settings to hide or toggle it are gone), and the window title
+names this build. Details are in [FORK.md](FORK.md).
 
-This release is version 1.41.0.1: upstream version 1.41.0.0 (commit `4d8a05c`, 2026-03-21) with the sidebar change.
+This release is version 1.41.0.2: upstream version 1.41.0.0 (commit `4d8a05c`, 2026-03-21) with these changes.
 
 ## How to install
 

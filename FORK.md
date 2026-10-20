@@ -25,7 +25,10 @@ Changes to the mod (modified version under the AGPL-3.0, section 5):
   stays and now applies at once. Files: `DualPaneController.lua`, `LeftPane.lua`, `RightPaneHeaderActions.lua`,
   `InitHandles.lua`, `IMGUIAPI.lua`, `MCMProxy.lua`, `MCM_blueprint.json`, and the English and Brazilian Portuguese
   description of the width setting. Every changed place in the code carries a `bg3_mcm build` comment.
-- The version is the upstream version, and its last digit counts the builds of this fork: 1.41.0.1 is the first
+- 2026-10-20, version 1.41.0.2: the title of the MCM window ends with "(KintaroModding)", for example "Mod
+  Configuration Menu 1.41.0.2 (KintaroModding)", so players can tell this build from the official one. File:
+  `MCMRendering.lua`.
+- The version is the upstream version, and its last digit counts the builds of this fork: 1.41.0.1 was the first
   changed build of upstream 1.41.0.0.
 
 On 2026-10-20 this fork also added these files:
@@ -41,8 +44,8 @@ On 2026-10-20 this fork also added these files:
 
 - `main` follows the upstream repository.
 - `release` is the upstream commit that carries the released version, plus the changes and files above. The first
-  release is built from upstream commit `4d8a05c` (2026-03-21), which set version 1.41.0.0; with the sidebar change it
-  is 1.41.0.1.
+  release is built from upstream commit `4d8a05c` (2026-03-21), which set version 1.41.0.0; with the changes above it
+  is 1.41.0.2.
 - A release is tagged `v<version>` with the version from `Mod Configuration Menu/Mods/BG3MCM/meta.lsx`, and has
   `bg3_mcm.pak` attached.
 - To update: merge the upstream commit that raises the version into `release`, keep the changes at the

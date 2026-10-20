@@ -246,7 +246,8 @@ function MCMRendering:CreateMainIMGUIWindow()
 
     local modVersion = MCMUtils.FormatModVersion(ModuleUUID)
     ---@class ExtuiWindow
-    MCM_WINDOW = Ext.IMGUI.NewWindow(modMenuTitle .. " " .. modVersion)
+    -- bg3_mcm build: the title names this build, for example "Mod Configuration Menu 1.41.0.2 (KintaroModding)".
+    MCM_WINDOW = Ext.IMGUI.NewWindow(modMenuTitle .. " " .. modVersion .. " (KintaroModding)")
     MCM_WINDOW.Scaling = "Scaled"
     local sizeSetting = MCMClientState:GetClientStateValue("font_size", ModuleUUID) or "Default"
     local family = MCMClientState:GetClientStateValue("typeface", ModuleUUID) or ""
