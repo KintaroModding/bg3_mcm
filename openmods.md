@@ -14,6 +14,10 @@ hotkeys of all mods that use it. No more editing of JSON files:
 - In this build, the sidebar with the list of mods is always shown: it never collapses or hides.
 - The window title ends with "(KintaroModding)", so you can tell this build from the official one.
 
+## Screenshots
+
+![Mod Configuration Menu cover](docs/cover.png)
+
 ## Why this build
 
 The author publishes MCM on [Nexus Mods](https://www.nexusmods.com/baldursgate3/mods/9162) and its source code on
