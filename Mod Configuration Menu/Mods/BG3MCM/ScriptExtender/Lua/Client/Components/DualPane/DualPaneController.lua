@@ -60,69 +60,14 @@ local RX = {
     TimerScheduler = Ext.Require("Lib/reactivex/schedulers/timerscheduler.lua")
 }
 
-function GetAnimationDuration()
-    return MCM.Get("animation_duration")
-end
-
 local function GetMenuColumnWidth()
     return MCM.Get("sidebar_width")
 end
 
--- Helper: Check if collapse or fade should be skipped due to detached right pane
-function DualPaneController:_shouldSkipCollapseOrFade()
-    return self.rightPane and self.rightPane:IsCurrentModDetached()
-end
-
--- Helper: Generic animation for sidebar transitions
--- This function animates both the width (of the column) and the alpha (of the menuScrollChildWindow)
--- It stops if the current animation state no longer matches the expected state.
-function DualPaneController:animateSidebar(targetWidth, targetAlpha, expectedState, onComplete)
-    local colDef = self.mainLayoutTable.ColumnDefs[1]
-
-    -- Capture starting state
-    local startWidth = colDef.Width
-    local startAlpha = self.menuScrollChildWindow:GetStyle("Alpha")
-    local startTime = Ext.Timer.MonotonicTime()
-
-    local function step()
-        -- Guard: Stop if state changed (user clicked something else)
-        if self.currentAnimation ~= expectedState then
-            return
-        end
-
-        local now = Ext.Timer.MonotonicTime()
-        local elapsed = now - startTime
-
-        -- Calculate progress (0.0 to 1.0)
-        local progress = math.min(elapsed / GetAnimationDuration(), 1.0)
-
-        -- Apply easing
-        local t = Animation.EaseOutQuad(progress)
-
-        -- Update width and alpha
-        colDef.Width = Animation.Lerp(startWidth, targetWidth, t)
-
-        self.menuScrollChildWindow:SetStyle("Alpha", Animation.Lerp(startAlpha, targetAlpha, t))
-
-        if progress < 1.0 then
-            -- Schedule next frame (0 delay waits for next tick)
-            Ext.Timer.WaitFor(0, step)
-        else
-            -- Ensure exact final values
-            colDef.Width = targetWidth
-            self.menuScrollChildWindow:SetStyle("Alpha", targetAlpha)
-            if onComplete then onComplete() end
-        end
-    end
-
-    step()
-end
-
--- Setup hover event handlers
-function DualPaneController:setupHoverHandlers(targetWindow, onEnter, onLeave)
-    targetWindow.OnHoverEnter = onEnter
-    targetWindow.OnHoverLeave = onLeave
-end
+-- bg3_mcm build (2026-10-20, see FORK.md): the sidebar with the mod list is always shown. It never collapses or
+-- fades, and nothing toggles it: no hover expansion, no automatic collapse, no start collapsed, no Caps Lock, button
+-- or gamepad toggle. The settings enable_hover, enable_auto_collapse, collapsed_by_default,
+-- toggle_mcm_sidebar_keybinding and animation_duration are gone from the blueprint; only sidebar_width stays.
 
 function DualPaneController:InitWithWindow(window)
     local self = setmetatable({}, DualPaneController)
@@ -131,24 +76,13 @@ function DualPaneController:InitWithWindow(window)
     self.leftPane = LeftPane:New(self.menuScrollChildWindow)
     self.rightPane = RightPane:New(self.contentScrollChildWindow)
 
-    -- Check if we should start collapsed
-    local startCollapsed = MCMAPI:GetSettingValue("collapsed_by_default", ModuleUUID)
-    self.isCollapsed = startCollapsed
+    -- bg3_mcm build: the sidebar always starts shown.
+    self.isCollapsed = false
     self.isHovered = false
     self.userHasInteracted = false
     self.hoverSubscription = nil
     self.currentAnimation = nil
     self.lastExpandedWidth = GetMenuColumnWidth()
-
-    -- Initialize the UI state based on the collapsed setting
-    if startCollapsed then
-        self.menuScrollChildWindow.Visible = false
-        self.mainLayoutTable.ColumnDefs[1].Width = TARGET_WIDTH_COLLAPSED
-        self.menuScrollChildWindow:SetStyle("Alpha", 0)
-    end
-
-    -- Attach hover listeners initially (menu is expanded by default unless collapsed_by_default is true)
-    self:AttachHoverListeners()
     return self
 end
 
@@ -197,176 +131,24 @@ function DualPaneController:GenerateTabId(modUUID, tabName)
     return modUUID .. "_" .. self:NormalizeTabName(tabName)
 end
 
--- Attach hover listeners to either the menuScrollChildWindow (if expanded/visible) or the expand button (if collapsed)
-function DualPaneController:AttachHoverListeners()
-    local enabledHover = MCMAPI:GetSettingValue("enable_hover", ModuleUUID)
-    if not enabledHover then return end
-
-    if self.menuScrollChildWindow.Visible then
-        self:setupHoverHandlers(
-            self.menuScrollChildWindow,
-            function()
-                self.isHovered = true
-                self.userHasInteracted = true
-                self:CancelAutoCollapse()
-                self.menuScrollChildWindow:SetStyle("Alpha", 1)
-            end,
-            function()
-                local enabledAutoCollapse = MCMAPI:GetSettingValue("enable_auto_collapse", ModuleUUID)
-                if not enabledAutoCollapse then return end
-                self.isHovered = false
-                self:ScheduleAutoCollapse()
-                self:FadeSidebarOutAlpha(HOVER_DELAY_MS / 1000)
-            end
-        )
-    else
-        if HeaderActionsInstance.expandBtn then
-            self:setupHoverHandlers(
-                HeaderActionsInstance.expandBtn,
-                function()
-                    local enabledHover = MCMAPI:GetSettingValue("enable_hover", ModuleUUID)
-                    if not enabledHover then return end
-                    self.isHovered = true
-                    self.userHasInteracted = true
-                    self:CancelAutoCollapse()
-                    self:Expand()
-                end,
-                nil
-            )
-        end
-    end
-end
-
--- Gradually fade the menuScrollChildWindow's alpha to a target value over a given duration (in seconds).
--- Used for auto collapse.
-function DualPaneController:FadeSidebarOutAlpha(durationInS)
-    local enabledAutoCollapse = MCMAPI:GetSettingValue("enable_auto_collapse", ModuleUUID)
-    if not enabledAutoCollapse then return end
-
-    -- Prevent fade out if the right pane content is detached
-    if self:_shouldSkipCollapseOrFade() then
-        MCMDebug(3, "Right pane is detached, skipping sidebar fade out.")
-        self.menuScrollChildWindow:SetStyle("Alpha", 1)
-        return
-    end
-
-    local targetAlpha = 0.33
-    self.menuScrollChildWindow:SetStyle("Alpha", 0.8)
-
-    local startAlpha = self.menuScrollChildWindow:GetStyle("Alpha")
-    local durationMs = durationInS * 1000
-    local startTime = Ext.Timer.MonotonicTime()
-
-    local function stepFade()
-        -- If the user re-enters before fade-out completes, cancel further fade steps.
-        if self.isHovered then
-            return
-        end
-
-        local now = Ext.Timer.MonotonicTime()
-        local elapsed = now - startTime
-        local progress = math.min(elapsed / durationMs, 1.0)
-
-        -- Calculate new Alpha
-        local currentAlpha = Animation.Lerp(startAlpha, targetAlpha, progress)
-        self.menuScrollChildWindow:SetStyle("Alpha", currentAlpha)
-
-        if progress < 1.0 then
-            Ext.Timer.WaitFor(0, stepFade)
-        else
-            self.menuScrollChildWindow:SetStyle("Alpha", targetAlpha)
-        end
-    end
-
-    stepFade()
-end
-
-function DualPaneController:CancelAutoCollapse()
-    if self.hoverSubscription then
-        self.hoverSubscription:_unsubscribe()
-        self.hoverSubscription = nil
-    end
-end
-
--- Schedule auto-collapse after HOVER_DELAY_MS if not hovered and if the user has already interacted
-function DualPaneController:ScheduleAutoCollapse()
-    local enabledAutoCollapse = MCMAPI:GetSettingValue("enable_auto_collapse", ModuleUUID)
-    if not enabledAutoCollapse or (not self.userHasInteracted) then
-        return
-    end
-
-    -- Prevent auto-collapse if the right pane content is detached
-    if self:_shouldSkipCollapseOrFade() then
-        MCMDebug(3, "Right pane is detached, skipping auto-collapse.")
-        return
-    end
-
-    -- If a subscription already exists, cancel it before creating a new one
-    self:CancelAutoCollapse()
-
-    local scheduler = RX.TimerScheduler.Create()
-    self.hoverSubscription = scheduler:Schedule(function()
-        if not self.isHovered then
-            self:Collapse()
-        end
-    end, HOVER_DELAY_MS)
-end
-
--- Expand the sidebar (menu pane) 'asynchronously'
+--- Shows the sidebar at its full width, without animation. bg3_mcm build: the sidebar is always shown, so this only
+--- restores it (for example after a detach) and never takes the focus.
 function DualPaneController:Expand()
-    -- Set the current animation to "expand". This cancels any ongoing collapse animation.
-    self.currentAnimation = "expand"
-    HeaderActionsInstance:UpdateToggleButtons(false)
+    self.currentAnimation = nil
+    self.isCollapsed = false
     self.menuScrollChildWindow.Visible = true
-    self.menuScrollChildWindow:SetFocus()
-    -- Use the last expanded width instead of the fixed TARGET_WIDTH_EXPANDED
-    -- local targetWidth = self.lastExpandedWidth or GetMenuColumnWidth()
-    local targetWidth = GetMenuColumnWidth()
-
-    self:animateSidebar(targetWidth, 1, "expand", function()
-        self.isCollapsed = false
-        HeaderActionsInstance:UpdateToggleButtons(self.isCollapsed)
-        self:AttachHoverListeners()
-        self.currentAnimation = nil
-        -- self.mainLayoutTable.Resizable = true
-    end)
+    self.menuScrollChildWindow:SetStyle("Alpha", 1)
+    self.mainLayoutTable.ColumnDefs[1].Width = GetMenuColumnWidth()
 end
 
+--- bg3_mcm build: the sidebar never collapses; Collapse keeps it shown.
 function DualPaneController:Collapse()
-    -- self.mainLayoutTable.Resizable = false
-
-    -- Store the current width before collapsing. Not working since Width is not updating correctly?
-    -- self.lastExpandedWidth = self.mainLayoutTable.ColumnDefs[1].Width
-
-    self.currentAnimation = "collapse"
-    HeaderActionsInstance:UpdateToggleButtons(true)
-    self:animateSidebar(TARGET_WIDTH_COLLAPSED, 0, "collapse", function()
-        self.menuScrollChildWindow.Visible = false
-        self.isCollapsed = true
-        HeaderActionsInstance:UpdateToggleButtons(self.isCollapsed)
-        self:AttachHoverListeners()
-        self.currentAnimation = nil
-    end)
+    self:Expand()
 end
 
--- Toggle the sidebar, canceling any in-progress animation if needed.
+--- bg3_mcm build: the sidebar cannot be toggled; ToggleSidebar keeps it shown.
 function DualPaneController:ToggleSidebar()
-    self.userHasInteracted = true
-
-    -- If we are collapsing (:skull:), cancel and start expanding, vice versa
-    if self.currentAnimation == "collapse" then
-        self:Expand()
-        return
-    elseif self.currentAnimation == "expand" then
-        self:Collapse()
-        return
-    end
-
-    if self.isCollapsed then
-        self:Expand()
-    else
-        self:Collapse()
-    end
+    self:Expand()
 end
 
 -- Tab management API; delegates to RightPane.
@@ -436,17 +218,9 @@ function DualPaneController:ActivateTab(modUUID, targetTab, shouldOpenWindow)
     end
 end
 
--- Helper to handle sidebar expansion or collapse
+-- Helper to handle sidebar expansion or collapse. bg3_mcm build: the sidebar is always shown, so opening a mod page
+-- changes nothing here.
 function DualPaneController:HandleSidebarStateChange(keepSidebarState)
-    if keepSidebarState == true then
-        return
-    end
-    local enableAutoCollapse = MCMAPI:GetSettingValue("enable_auto_collapse", ModuleUUID)
-    if enableAutoCollapse then
-        self:Collapse()
-    else
-        self:Expand()
-    end
 end
 
 -- Helper to avoid select lockdown by unselecting the tab after a few ticks

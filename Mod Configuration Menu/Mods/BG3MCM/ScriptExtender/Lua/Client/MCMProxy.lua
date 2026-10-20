@@ -288,8 +288,7 @@ function MCMProxy:RegisterMCMKeybindings()
     InputCallbackManager.RegisterKeybinding(ModuleUUID, "reset_lua_server", function() Ext.Debug.Reset(true, false) end)
     InputCallbackManager.RegisterKeybinding(ModuleUUID, "close_mcm_keybinding",
         function() IMGUIAPI:CloseMCMWindow(true) end)
-    InputCallbackManager.RegisterKeybinding(ModuleUUID, "toggle_mcm_sidebar_keybinding",
-        function() IMGUIAPI:ToggleMCMSidebar() end)
+    -- bg3_mcm build: no sidebar toggle key (Caps Lock); the sidebar is always shown.
 
     -- MCMAPI:SetEventButtonDisabled(ModuleUUID, "EventButtonExample2", true, "Disabled via API")
     -- MCMAPI:SetEventButtonDisabled(ModuleUUID, "EventButtonExample", true, "Disabled via API too")

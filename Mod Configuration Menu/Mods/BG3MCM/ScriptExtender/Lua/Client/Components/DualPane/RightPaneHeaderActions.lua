@@ -20,27 +20,7 @@ function HeaderActions:New(parent)
     local self = setmetatable({}, HeaderActions)
     self.group = parent:AddGroup("HeaderActions")
 
-    -- Create toggle buttons and set their OnClick to call DualPane:ToggleSidebar()
-    self.expandBtn = self:CreateActionButton(Ext.Loca.GetTranslatedString("h9db97044cb044d15b12a4edf05f463154812"),
-        ICON_TOGGLE_EXPAND,
-        VCString:InterpolateLocalizedMessage("hbb483085e7f04700beb8cc5bf94a98b4g6ac",
-            KeyPresentationMapping:GetViewKeyForSetting("toggle_mcm_sidebar_keybinding", ModuleUUID)), 1.5)
-    self.expandBtn.SameLine = true
-    self.collapseBtn = self:CreateActionButton(Ext.Loca.GetTranslatedString("h8f387f7585c44277893ec0714a67c13f4g18"),
-        ICON_TOGGLE_COLLAPSE,
-        VCString:InterpolateLocalizedMessage("h4e0e208daa6a439ca5ba95a668a7ac36d882",
-            KeyPresentationMapping:GetViewKeyForSetting("toggle_mcm_sidebar_keybinding", ModuleUUID)), 1.5)
-    self.collapseBtn.SameLine = true
-    self.expandBtn.OnClick = function() DualPane:ToggleSidebar() end
-    self.collapseBtn.OnClick = function() DualPane:ToggleSidebar() end
-
-    if DualPane and DualPane.isCollapsed then
-        self.expandBtn.Visible = true
-        self.collapseBtn.Visible = false
-    else
-        self.expandBtn.Visible = false
-        self.collapseBtn.Visible = true
-    end
+    -- bg3_mcm build: no show/hide sidebar buttons; the sidebar is always shown.
 
     local dummy = self.group:AddDummy(15, 0)
     dummy.SameLine = true
@@ -118,21 +98,8 @@ function HeaderActions:CreateActionButton(text, icon, tooltip, multiplier)
     return button
 end
 
--- Update the visibility of toggle buttons based on whether the sidebar is collapsed.
--- If isCollapsed is true then show the expand button; otherwise, show the collapse button.
+-- bg3_mcm build: there are no sidebar toggle buttons, so there is nothing to update.
 function HeaderActions:UpdateToggleButtons(isCollapsed)
-    if self.expandBtn == nil or self.collapseBtn == nil then
-        MCMError(0, "HeaderActions:UpdateToggleButtons: self.expandBtn or self.collapseBtn is nil")
-        return
-    end
-
-    if isCollapsed then
-        self.expandBtn.Visible = true
-        self.collapseBtn.Visible = false
-    else
-        self.expandBtn.Visible = false
-        self.collapseBtn.Visible = true
-    end
 end
 
 -- Update the detach/reattach buttons based on the current mod's detachment state

@@ -244,72 +244,9 @@
             "Sections": [
                 {
                     "SectionId": "sidebar_settings",
-                    "SectionDescription": "By default, the sidebar automatically expands when hovering the icon, and will collapse when opening a mod page.\nYou can also manually toggle it with CAPSLOCK.",
+                    "SectionDescription": "The sidebar with the list of mods is always shown (bg3_mcm build).",
                     "SectionName": "Sidebar settings",
                     "Settings": [
-                        {
-                            "Id": "enable_hover",
-                            "Name": "Enable expansion on icon hover",
-                            "Type": "checkbox",
-                            "Default": true,
-                            "Description": "Enable hover-based expansion of the sidebar.",
-                            "Handles": {
-                                "NameHandle": "h0813e1fea4fe4400b99a11216d16627be921",
-                                "DescriptionHandle": "h37d5cb487a49476db6c16dc59452cae67f6f"
-                            }
-                        },
-                        {
-                            "Id": "enable_auto_collapse",
-                            "Name": "Enable automatic sidebar collapse",
-                            "Type": "checkbox",
-                            "Default": true,
-                            "Description": "When enabled, the sidebar will automatically collapse based on inactivity or other collapse triggers (opening a mod page, etc).",
-                            "Handles": {
-                                "NameHandle": "h0636d5bc17f6464f99c1da18831bb38f1561",
-                                "DescriptionHandle": "h3f6a4e8a570d41c2bf60d673a3bfa1ef3472"
-                            }
-                        },
-                        {
-                            "Id": "collapsed_by_default",
-                            "Name": "Start collapsed",
-                            "Type": "checkbox",
-                            "Default": false,
-                            "Description": "Start with the sidebar in a collapsed state when opening MCM.",
-                            "Handles": {
-                                "NameHandle": "h0813e1fea4fe4400b99a11216d16627be922",
-                                "DescriptionHandle": "h37d5cb487a49476db6c16dc59452cae67f6g"
-                            }
-                        },
-                        {
-                            "Id": "toggle_mcm_sidebar_keybinding",
-                            "Name": "Toggle sidebar (collapse/expand)",
-                            "Type": "keybinding_v2",
-                            "Default": {
-                                "Keyboard": {
-                                    "Key": "CAPSLOCK"
-                                }
-                            },
-                            "Description": "Toggles the sidebar between collapsed and expanded.",
-                            "Handles": {
-                                "NameHandle": "h3dafbcac8ffe4c7b9ca391520326dbb65984",
-                                "DescriptionHandle": "h4db8c7a1952847eda028173a74dc5e166ea5"
-                            }
-                        },
-                        {
-                            "Id": "animation_duration",
-                            "Name": "Sidebar animation duration (ms)",
-                            "Type": "slider_int",
-                            "Default": 200,
-                            "Options": {
-                                "Min": 0,
-                                "Max": 1000
-                            },
-                            "Description": "The duration of the sidebar animation in milliseconds.",
-                            "Handles": {
-                                "NameHandle": "h2e2fee5757724d0bb36dc9406bbac89539a1",
-                                "DescriptionHandle": "h306ab94b54e949a8b6dfac9f474e5cd7a91g"
-                            }
-                        },
                         {
                             "Id": "sidebar_width",
                             "Name": "Sidebar width",
@@ -319,7 +256,7 @@
                                 "Min": 200,
                                 "Max": 600
                             },
-                            "Description": "The width of the sidebar in pixels.\nSince the sidebar is dynamic, its expanded width can only be statically defined (IMGUI limitation).\nThis will only take effect after re-expanding the sidebar.",
+                            "Description": "The width of the sidebar in pixels.",
                             "Handles": {
                                 "NameHandle": "h7e2260907ca24449ac99f48ba8c149c6d6bf",
                                 "DescriptionHandle": "h57d43b08f0974d2683202bc8737416da4740"
@@ -327,8 +264,7 @@
                         }
                     ],
                     "Handles": {
-                        "NameHandle": "h3eea24a3dff74849a38e04f0fc43b4b54963",
-                        "DescriptionHandle": "h4f7f7d8278084ab49b90d31af3f3810eegc7"
+                        "NameHandle": "h3eea24a3dff74849a38e04f0fc43b4b54963"
                     }
                 }
             ]

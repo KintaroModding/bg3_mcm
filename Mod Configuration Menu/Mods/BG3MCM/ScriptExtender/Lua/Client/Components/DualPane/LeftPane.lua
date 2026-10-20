@@ -31,9 +31,7 @@ function LeftPane:CreateMenuButton(text, description, uuid)
             DualPane.rightPane:ReattachModGroup(uuid)
         end
         DualPane:SwitchVisibleContent(button, uuid)
-        if MCMAPI:GetSettingValue("enable_auto_collapse", ModuleUUID) then
-            DualPane:ToggleSidebar()
-        end
+        -- bg3_mcm build: no automatic collapse after a click; the sidebar stays shown.
     end
     IMGUIHelpers.AddTooltip(button, description, "MenuButton_" .. text .. "_" .. uuid .. "_TOOLTIP")
     return button

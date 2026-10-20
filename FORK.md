@@ -12,11 +12,23 @@ the download and the source match, and so that the mod stays maintainable in any
 
 ## What this fork changes
 
-Nothing in `Mod Configuration Menu/`, the content of the package: UUID (`755a8a72-407f-4f0d-9a33-274ac0f0b53d`),
-folder (`BG3MCM`), name and version stay the author's. A mod that depends on MCM works with this build in the same
-way. Players install only one copy: this build or the official one.
+The package keeps the author's UUID (`755a8a72-407f-4f0d-9a33-274ac0f0b53d`), folder (`BG3MCM`) and name, so a mod
+that depends on MCM works with this build in the same way. Players install only one copy: this build or the official
+one.
 
-On 2026-10-20 this fork added these files (modified version under the AGPL-3.0, section 5):
+Changes to the mod (modified version under the AGPL-3.0, section 5):
+
+- 2026-10-20, version 1.41.0.1: the sidebar with the list of mods is always shown. It no longer collapses when a mod
+  page opens, it never fades, and nothing toggles it: no expansion on hover, no Caps Lock key, no show/hide buttons,
+  no gamepad Back toggle. The settings "Enable expansion on icon hover", "Enable automatic sidebar collapse", "Start
+  collapsed", "Toggle sidebar (collapse/expand)" and "Sidebar animation duration (ms)" are removed. "Sidebar width"
+  stays and now applies at once. Files: `DualPaneController.lua`, `LeftPane.lua`, `RightPaneHeaderActions.lua`,
+  `InitHandles.lua`, `IMGUIAPI.lua`, `MCMProxy.lua`, `MCM_blueprint.json`, and the English and Brazilian Portuguese
+  description of the width setting. Every changed place in the code carries a `bg3_mcm build` comment.
+- The version is the upstream version, and its last digit counts the builds of this fork: 1.41.0.1 is the first
+  changed build of upstream 1.41.0.0.
+
+On 2026-10-20 this fork also added these files:
 
 - `build.ps1`: builds `output/bg3_mcm.pak`. It copies `Mod Configuration Menu/` without editor folders (`.vscode`),
   converts `Localization/<Language>/*.loca.xml` into the `.loca` files that the game reads, and packs the result with
@@ -28,11 +40,14 @@ On 2026-10-20 this fork added these files (modified version under the AGPL-3.0, 
 ## Branches and releases
 
 - `main` follows the upstream repository.
-- `release` is the upstream commit that carries the released version, plus the files above. The first release is
-  built from upstream commit `4d8a05c` (2026-03-21), which set version 1.41.0.0.
+- `release` is the upstream commit that carries the released version, plus the changes and files above. The first
+  release is built from upstream commit `4d8a05c` (2026-03-21), which set version 1.41.0.0; with the sidebar change it
+  is 1.41.0.1.
 - A release is tagged `v<version>` with the version from `Mod Configuration Menu/Mods/BG3MCM/meta.lsx`, and has
   `bg3_mcm.pak` attached.
-- To update: merge the upstream commit that raises the version into `release`, run `build.ps1`, test, and release.
+- To update: merge the upstream commit that raises the version into `release`, keep the changes at the
+  `bg3_mcm build` comments, set the version to the upstream version plus 1 in the last digit, run `build.ps1`, test,
+  and release.
 
 ## Reports
 

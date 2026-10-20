@@ -11,16 +11,18 @@ hotkeys of all mods that use it. No more editing of JSON files:
 - Changes apply at once, without loading the save again.
 - Settings are saved in files outside the savegames, in profiles.
 - Mods can show their texts in your language when they have translations.
+- In this build, the sidebar with the list of mods is always shown: it never collapses or hides.
 
 ## Why this build
 
 The author publishes MCM on [Nexus Mods](https://www.nexusmods.com/baldursgate3/mods/9162) and its source code on
 [GitHub](https://github.com/AtilioA/BG3-MCM), but the GitHub repository has no releases. This fork builds releases
 from that source, so that the download and the source match, and so that the mod stays maintainable in any case.
-Nothing in the mod is changed: it is the same mod, with the same UUID, so every mod that uses MCM works with it.
-Details are in [FORK.md](FORK.md).
+It is the same mod, with the same UUID, so every mod that uses MCM works with it. It has one change: the sidebar
+with the list of mods is always shown, so the settings to hide or toggle it are gone. Details are in
+[FORK.md](FORK.md).
 
-This release is version 1.41.0.0, built from upstream commit `4d8a05c` (2026-03-21), which set this version.
+This release is version 1.41.0.1: upstream version 1.41.0.0 (commit `4d8a05c`, 2026-03-21) with the sidebar change.
 
 ## How to install
 
@@ -43,13 +45,15 @@ left and change its settings.
 ## Compatibility
 
 - Game version: Patch 8
-- Works with every mod that uses MCM, because it is the same mod as the official one.
+- Works with every mod that uses MCM, because it keeps the UUID, the folder and the interface of the official MCM.
 - Do not install it next to the official MCM.
 
 ## Known issues
 
-None in this build. For problems with MCM itself, see the
-[upstream issues](https://github.com/AtilioA/BG3-MCM/issues).
+- MCM's one-time welcome note still says that the gamepad Back button opens the sidebar. In this build the sidebar
+  is always open.
+
+For problems with MCM itself, see the [upstream issues](https://github.com/AtilioA/BG3-MCM/issues).
 
 ## How to build
 

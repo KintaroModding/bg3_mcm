@@ -24,9 +24,10 @@ function IMGUIAPI:UpdateMCMWindowValues(settingId, value, modUUID)
         MCMClientState:SetMCMTypeface(value)
     end
 
-    -- if settingId == "toggle_mcm_sidebar_keybinding" then
-    --     InitHandles:UpdateMCMSidebarKeybindingHandle()
-    -- end
+    -- bg3_mcm build: the sidebar is always shown, so a new width applies at once.
+    if settingId == 'sidebar_width' and DualPane and DualPane.mainLayoutTable and type(value) == "number" then
+        DualPane.mainLayoutTable.ColumnDefs[1].Width = value
+    end
 end
 
 --- Insert a new tab for a mod in the MCM
